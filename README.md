@@ -1,4 +1,4 @@
-# Ciclo de estudos — GitHub Pages
+# Ciclo — 
 
 ## Publicar
 
