@@ -129,6 +129,7 @@ function makeWeek(active,nd,slots,work,cap){
  }
  return {plan,totals,target};
 }
+const dismissedAlerts=new Set();
 function renderSchedule(){
  const daily=+state.daily,cap=+state.cap,nd=+state.days;
  const active=state.subjects.map((s,i)=>({...s,i})).filter(s=>s.name.trim()&&phaseWeight[s.status]&&s.weight>0);
@@ -153,7 +154,7 @@ function renderSchedule(){
  if(!manual&&slots>minimum)alerts.push(`O modo automático usou ${slots} matérias por dia para aproximar as horas semanais das matérias em Construção.`);
  $('schedule').innerHTML=week.plan.map((blocks,d)=>`<div class="day"><h3>${days[d]}</h3>${blocks.map(({i,minutes})=>`<div class="slot"><div><b>${esc(active[i].name)}</b><small>${esc(active[i].status)}</small></div><time>${hm(minutes)}</time></div>`).join('')}</div>`).join('')||'<p>Ative ao menos uma matéria para gerar a semana.</p>';
  $('allocation').innerHTML=week.totals.length?`<h3>Horas por matéria na semana</h3>${active.map((s,i)=>`<div class="allocation-row"><span>${esc(s.name)} <small>· ${esc(s.status)}</small></span><b>${hm(week.totals[i])}</b></div>`).join('')}`:'';
- $('alerts').innerHTML=alerts.map(x=>`<div class="alert">${esc(x)}</div>`).join('');
+ $('alerts').innerHTML=alerts.filter(x=>!dismissedAlerts.has(x)).map(x=>`<div class="alert"><span>${esc(x)}</span>${x.startsWith('O modo automático usou')?`<button type="button" class="alert-close" data-dismiss="${esc(x)}" aria-label="Ocultar aviso do modo automático">×</button>`:''}</div>`).join('');
  $('total').textContent=hm(week.totals.reduce((a,b)=>a+b,0));$('active').textContent=active.length;$('study').textContent=hm(daily);
 }
 for(let id of ['daily','cap','days','perday']){$(id).value=state[id];$(id).addEventListener(id==='daily'||id==='cap'?'input':'change',e=>{state[id]=id==='perday'?e.target.value:+e.target.value;updateSliderLabels();save()})}
@@ -164,3 +165,5 @@ $('subjects').addEventListener('input',e=>{let i=e.target.dataset.i;if(i!==undef
 $('subjects').addEventListener('click',e=>{let i=e.target.dataset.remove;if(i===undefined)return;state.subjects.splice(+i,1);renderSubjects();save()});
 $('add').onclick=()=>{state.subjects.push({name:'Nova matéria',status:'Aguardando',weight:1});renderSubjects();save()};
 updateSliderLabels();renderSubjects();renderSchedule();
+
+$('alerts').onclick=e=>{const button=e.target.closest('[data-dismiss]');if(!button)return;dismissedAlerts.add(button.dataset.dismiss);renderSchedule()};

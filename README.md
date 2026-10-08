@@ -2,7 +2,7 @@
 
 ## Atualizar o GitHub Pages
 
-Extraia o ZIP e envie todos os arquivos para a raiz da branch que publica seu site. Substitua `index.html` e `app.js` e inclua também `study-core.js`, `tracker.js`, `tracker.css`, `reviews.js`, `reviews.css`, `colors.js`, `diagram.png` e `favicon.ico`. Não publique o ZIP inteiro como se fosse a página.
+Extraia o ZIP e envie todos os arquivos para a raiz da branch que publica seu site. Substitua `index.html` e `app.js` e inclua também `study-core.js`, `tracker.js`, `tracker.css`, `reviews.js`, `reviews.css`, `colors.js`, `eagle.svg`, `eagle.png` e `favicon.ico`. Não publique o ZIP inteiro como se fosse a página.
 
 O site é estático: não precisa instalar dependências nem compilar. Os caminhos dos arquivos são relativos e funcionam em `usuario.github.io/nome-do-repositorio/`.
 
@@ -52,4 +52,6 @@ Planos e revisões são incluídos na sincronização com GitHub e nos backups. 
 
 ## Ícone e cores
 
-O ícone diagram.png aparece na aba e nos favoritos. Se o navegador ainda mostrar o ícone antigo, recarregue a página e recrie o favorito. Matérias têm cores próprias, fases têm cores distintas e os cabeçalhos dos dias usam azul.
+O ícone eagle.svg aparece na aba e nos favoritos. Se o navegador ainda mostrar o ícone antigo, recarregue a página e recrie o favorito. Matérias têm cores próprias, fases têm cores distintas e os cabeçalhos dos dias usam azul.
+
+Os dois cronômetros possuem Reiniciar: ele descarta apenas o tempo não salvo após confirmação, mantendo os campos selecionados. O aviso informativo do modo automático pode ser ocultado pelo ×; permanece oculto nesta aba para a mesma mensagem.
