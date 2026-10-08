@@ -1,17 +1,39 @@
-# Ciclo — 
+# Ciclo de estudos — cronômetro, histórico e sincronização
 
-## Publicar
+## Atualizar o GitHub Pages
 
-1. Crie um repositório no GitHub.
-2. Envie `index.html` e `app.js` para a raiz da branch `main`. O `README.md` é opcional.
-3. No repositório, abra **Settings → Pages**.
-4. Em **Build and deployment**, escolha **Deploy from a branch**. Selecione `main` e `/ (root)` e salve.
-5. Aguarde a URL do GitHub Pages aparecer nessa mesma página.
+Extraia o ZIP e envie todos os arquivos para a raiz da branch que publica seu site. Substitua `index.html` e `app.js` e inclua também `study-core.js`, `tracker.js` e `tracker.css`. Não publique o ZIP inteiro como se fosse a página.
 
-Não há dependências, instalação ou etapa de compilação. O `index.html` usa o caminho relativo `app.js`, então também funciona em URLs do tipo `usuario.github.io/nome-do-repositorio/`.
+O site é estático: não precisa instalar dependências nem compilar. Os caminhos dos arquivos são relativos e funcionam em `usuario.github.io/nome-do-repositorio/`.
 
-## Dados
+Se estiver começando: em **Settings → Pages**, selecione **Deploy from a branch**, a branch `main` e `/ (root)`.
 
-As matérias e configurações são salvas pelo navegador em `localStorage`. Elas não acompanham estes arquivos, não são sincronizadas entre dispositivos e não aparecem automaticamente no endereço do GitHub Pages. O site novo iniciará com as matérias padrão, mesmo que você tenha personalizado a versão anterior. Evite limpar os dados do navegador antes de copiar manualmente suas configurações.
+## Salvar os dados no GitHub
 
-A página do GitHub Pages fica pública na internet, inclusive quando o repositório de origem é privado em planos que permitem essa configuração. Não inclua dados pessoais sensíveis no código.
+1. Crie um repositório para os dados, de preferência **privado e separado** do repositório público do site. Marque a opção de criar um README para que a branch exista.
+2. Em https://github.com/settings/personal-access-tokens/new, crie um **fine-grained personal access token**, com validade e acesso somente ao repositório de dados.
+3. Em **Repository permissions → Contents**, selecione **Read and write**.
+4. No site, abra **Salvar no GitHub**, informe `usuario/repositorio`, cole o token e clique em **Conectar e sincronizar**. O campo de branch pode ficar vazio: ele usará a branch padrão.
+5. O site lê ou cria `ciclo-estudos/dados.json`. Matérias, planejamento, sessões, correções e exclusões são sincronizados. Cada gravação gera um commit, permitindo consultar versões pelo histórico do GitHub.
+
+O token fica apenas na memória da aba: não é inserido no código, exportado no backup ou armazenado no navegador. Ao fechar/reabrir ou recarregar a página, cole o token novamente para continuar sincronizando. Não envie o token em conversas, arquivos ou commits.
+
+Sem conexão, as alterações ficam na cópia local e são enviadas quando você conectar ou sincronizar novamente. A interface diferencia registros pendentes de gravações concluídas. Uma branch que exige pull requests pode impedir gravações diretas. Prefira um repositório de dados dedicado.
+
+## Cronômetro e horas líquidas
+
+Abra **Estudo e histórico**, selecione uma matéria e use **Iniciar**, **Pausar**, **Parar** e **Salvar sessão**. As pausas são excluídas. Um cronômetro iniciado continua contando quando a aba está em segundo plano; pause quando interromper o estudo. Uma sessão que cruza a meia-noite é distribuída entre as datas locais.
+
+Para corrigir uma sessão, use **Editar** no histórico. Também é possível adicionar sessões manualmente no formato `h:mm`, com data, matéria e observação. Os gráficos diário, semanal e mensal e os totais são recalculados. As semanas começam na segunda-feira, usando o calendário local do dispositivo.
+
+## Levar os dados para outro endereço
+
+No endereço antigo, abra **Salvar no GitHub → Backup e mudança de endereço → Baixar backup dos dados**. No endereço novo, importe o arquivo ou conecte ao mesmo repositório de dados. Importar combina os registros pelos seus identificadores; não duplica o mesmo registro.
+
+Dados no navegador pertencem ao endereço em que foram criados. Se você nunca conectou o site antigo ao GitHub, ele não terá como recuperar automaticamente aqueles dados pelo endereço novo.
+
+## Limites e verificação
+
+A sincronização foi testada com respostas simuladas do GitHub: gravação, recuperação, erros de rede, conflitos, edição durante uma gravação e exclusões. A conexão real precisa ser concluída com sua conta, repositório e token. O arquivo de dados é limitado a aproximadamente 950 KB nesta versão; exporte backups periodicamente para preservar uma cópia independente.
+
+A mesma sessão editada em dois dispositivos usa a alteração mais recente. Para o planejamento, prevalece a configuração alterada por último. Evite estudar com o mesmo cronômetro aberto simultaneamente em várias abas.

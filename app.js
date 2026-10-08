@@ -11,7 +11,7 @@ const $=id=>document.getElementById(id), phases=['Aguardando','Construção','Co
 const min=s=>{let [h,m]=String(s).split(':').map(Number);return (h||0)*60+(m||0)};
 const hm=n=>{n=Math.round(n);return `${Math.floor(n/60)}:${String(n%60).padStart(2,'0')}`};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function save(){localStorage.setItem(KEY,JSON.stringify(state));renderSchedule()}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));renderSchedule();window.dispatchEvent(new Event('plannerchange'))}
 function renderSubjects(){
  $('subjects').innerHTML=state.subjects.map((s,i)=>`<div class="subject"><input aria-label="Nome da matéria ${i+1}" data-i="${i}" data-field="name" value="${esc(s.name)}"><select aria-label="Fase de ${esc(s.name)}" data-i="${i}" data-field="status">${phases.map(p=>`<option ${s.status===p?'selected':''}>${p}</option>`).join('')}</select><input aria-label="Peso de ${esc(s.name)}" data-i="${i}" data-field="weight" type="number" min="0.1" max="5" step="0.1" value="${s.weight}"><button class="del" aria-label="Remover ${esc(s.name)}" data-remove="${i}">×</button></div>`).join('');
 }
