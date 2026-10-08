@@ -2,7 +2,7 @@
 
 ## Atualizar o GitHub Pages
 
-Extraia o ZIP e envie todos os arquivos para a raiz da branch que publica seu site. Substitua `index.html` e `app.js` e inclua também `study-core.js`, `tracker.js` e `tracker.css`. Não publique o ZIP inteiro como se fosse a página.
+Extraia o ZIP e envie todos os arquivos para a raiz da branch que publica seu site. Substitua `index.html` e `app.js` e inclua também `study-core.js`, `tracker.js`, `tracker.css`, `reviews.js`, `reviews.css`, `colors.js`, `diagram.png` e `favicon.ico`. Não publique o ZIP inteiro como se fosse a página.
 
 O site é estático: não precisa instalar dependências nem compilar. Os caminhos dos arquivos são relativos e funcionam em `usuario.github.io/nome-do-repositorio/`.
 
@@ -37,3 +37,19 @@ Dados no navegador pertencem ao endereço em que foram criados. Se você nunca c
 A sincronização foi testada com respostas simuladas do GitHub: gravação, recuperação, erros de rede, conflitos, edição durante uma gravação e exclusões. A conexão real precisa ser concluída com sua conta, repositório e token. O arquivo de dados é limitado a aproximadamente 950 KB nesta versão; exporte backups periodicamente para preservar uma cópia independente.
 
 A mesma sessão editada em dois dispositivos usa a alteração mais recente. Para o planejamento, prevalece a configuração alterada por último. Evite estudar com o mesmo cronômetro aberto simultaneamente em várias abas.
+
+## Revisões por assunto
+
+Na aba Revisões, escolha a matéria, escreva o assunto, a data estudada e as observações. O sistema agenda D+1, D+7, D+14, D+30, D+90 e D+120 a partir da data original. Revisões que cairiam no domingo passam para segunda-feira. Filtre por matéria, assunto ou situação: vencida, agendada e finalizada.
+
+O cronômetro de revisão registra horas líquidas no mesmo histórico, identificado como Revisão. Iniciar um cronômetro pausa o outro. As horas podem ser corrigidas no histórico; os gráficos separam Estudos e Revisões. Concluir uma revisão sem cronômetro não inventa horas estudadas.
+
+Ao passar para Consolidação, use os controles manuais para editar um plano, deslocar as revisões pendentes ou excluir as pendentes daquela matéria. As horas realizadas são preservadas; a exclusão de pendentes também preserva as revisões finalizadas. Nenhum plano é apagado automaticamente por mudar a fase.
+
+Os lembretes aparecem ao abrir a página. Notificações do navegador dependem de autorização e da página aberta. Para lembretes fora do site, exporte o calendário ICS e importe no seu aplicativo de calendário. Essa exportação é uma fotografia do planejamento: alterações posteriores exigem atualizar o calendário.
+
+Planos e revisões são incluídos na sincronização com GitHub e nos backups. Dados da versão anterior são migrados automaticamente; sessões antigas são classificadas como Estudos.
+
+## Ícone e cores
+
+O ícone diagram.png aparece na aba e nos favoritos. Se o navegador ainda mostrar o ícone antigo, recarregue a página e recrie o favorito. Matérias têm cores próprias, fases têm cores distintas e os cabeçalhos dos dias usam azul.
