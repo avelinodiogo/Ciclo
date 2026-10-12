@@ -152,10 +152,12 @@ function renderSchedule(){
  if(active.length===required&&active.length>1&&new Set(active.map(s=>s.status)).size>1)alerts.push('Com esta carga e este limite, todas as matérias ativas precisam preencher o máximo diário. Para dar menos tempo às fases avançadas, ative outra matéria ou ajuste um dos limites.');
  if(active.length>nd*4)alerts.push(`Há mais matérias ativas que os ${nd*4} blocos máximos da semana; algumas não caberão.`);
  if(!manual&&slots>minimum)alerts.push(`O modo automático usou ${slots} matérias por dia para aproximar as horas semanais das matérias em Construção.`);
+ window.currentWeekPlan=week.plan.map(blocks=>blocks.map(({i,minutes})=>({subject:active[i].name,status:active[i].status,minutes})));
  $('schedule').innerHTML=week.plan.map((blocks,d)=>`<div class="day"><h3>${days[d]}</h3>${blocks.map(({i,minutes})=>`<div class="slot"><div><b>${esc(active[i].name)}</b><small>${esc(active[i].status)}</small></div><time>${hm(minutes)}</time></div>`).join('')}</div>`).join('')||'<p>Ative ao menos uma matéria para gerar a semana.</p>';
  $('allocation').innerHTML=week.totals.length?`<h3>Horas por matéria na semana</h3>${active.map((s,i)=>`<div class="allocation-row"><span>${esc(s.name)} <small>· ${esc(s.status)}</small></span><b>${hm(week.totals[i])}</b></div>`).join('')}`:'';
  $('alerts').innerHTML=alerts.filter(x=>!dismissedAlerts.has(x)).map(x=>`<div class="alert"><span>${esc(x)}</span>${x.startsWith('O modo automático usou')?`<button type="button" class="alert-close" data-dismiss="${esc(x)}" aria-label="Ocultar aviso do modo automático">×</button>`:''}</div>`).join('');
  $('total').textContent=hm(week.totals.reduce((a,b)=>a+b,0));$('active').textContent=active.length;$('study').textContent=hm(daily);
+ window.dispatchEvent(new Event('schedulepaint'));
 }
 for(let id of ['daily','cap','days','perday']){$(id).value=state[id];$(id).addEventListener(id==='daily'||id==='cap'?'input':'change',e=>{state[id]=id==='perday'?e.target.value:+e.target.value;updateSliderLabels();save()})}
 function updateSliderLabels(){$('dailyValue').textContent=hm(state.daily);$('capValue').textContent=hm(state.cap)}

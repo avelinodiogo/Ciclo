@@ -3,13 +3,13 @@
 const C=window.StudyCore,$=id=>document.getElementById(id),STORE='ciclo-estudos-registros-v2',CONNECTION='ciclo-github-endereco-v1',now=()=>new Date().toISOString(),uuid=()=>crypto.randomUUID();
 let saved;try{saved=JSON.parse(localStorage.getItem(STORE))}catch{}
 const plannerWasSaved=!!localStorage.getItem(KEY);
-let data={schema:3,planner:{value:structuredClone(state),updatedAt:saved?.planner?.updatedAt||(plannerWasSaved?now():'')},sessions:(saved?.sessions||[]).map(r=>({...r,kind:r.kind||'study',topic:r.topic||''})),reviewPlans:saved?.reviewPlans||[],reviews:saved?.reviews||[]};
+let data={schema:4,planner:{value:structuredClone(state),updatedAt:saved?.planner?.updatedAt||(plannerWasSaved?now():'')},sessions:(saved?.sessions||[]).map(r=>({...r,kind:r.kind||'study',topic:r.topic||''})),reviewPlans:saved?.reviewPlans||[],reviews:saved?.reviews||[],planDays:saved?.planDays||[],reflections:saved?.reflections||[]};
 let reviewTimer=saved?.reviewTimer||{subject:'',topic:'',reviewId:'',startedAt:null,segments:[],mode:'idle'};
 let timer=saved?.timer||{subject:'',startedAt:null,segments:[],mode:'idle'};
 let dirty=saved?.dirty||false,editId=null,visibleRows=30,token='',repo='',branch='',connected=false,connecting=false,syncing=false,syncTimer=null,lastSync=saved?.lastSync||'',connectionEpoch=0;
 const cleanTimer=()=>({subject:'',startedAt:null,segments:[],mode:'idle'});
-function persist(){try{localStorage.setItem(STORE,JSON.stringify({planner:data.planner,sessions:data.sessions,reviewPlans:data.reviewPlans,reviews:data.reviews,timer,reviewTimer,dirty,lastSync}))}catch{showMessage('Não foi possível atualizar a cópia local. Baixe um backup e libere espaço no navegador.',true)}}
-function documentData(){return {schema:3,planner:{value:structuredClone(state),updatedAt:data.planner.updatedAt},sessions:structuredClone(data.sessions),reviewPlans:structuredClone(data.reviewPlans),reviews:structuredClone(data.reviews)}}
+function persist(){try{localStorage.setItem(STORE,JSON.stringify({planner:data.planner,sessions:data.sessions,reviewPlans:data.reviewPlans,reviews:data.reviews,planDays:data.planDays,reflections:data.reflections,timer,reviewTimer,dirty,lastSync}))}catch{showMessage('Não foi possível atualizar a cópia local. Baixe um backup e libere espaço no navegador.',true)}}
+function documentData(){return {schema:4,planner:{value:structuredClone(state),updatedAt:data.planner.updatedAt},sessions:structuredClone(data.sessions),reviewPlans:structuredClone(data.reviewPlans),reviews:structuredClone(data.reviews),planDays:structuredClone(data.planDays),reflections:structuredClone(data.reflections)}}
 function showMessage(text,error=false){$('study-message').textContent=text;$('study-message').hidden=false;$('study-message').classList.toggle('error',error)}
 function announce(text,error=false){$('github-status').textContent=text;$('github-status').classList.toggle('error',error);updateChip()}
 function updateChip(){const chip=$('sync-chip');chip.textContent=syncing?'Salvando no GitHub…':connected?(dirty?'Alterações pendentes':'Salvo no GitHub'):(dirty?'Pendente · conectar ao GitHub':'Cópia local');chip.classList.toggle('pending',dirty&&!syncing)}
@@ -81,11 +81,14 @@ window.addEventListener('online',()=>{if(connected)syncGitHub()});
 window.addEventListener('focus',()=>{if(connected&&!syncing)syncGitHub()});
 $('backup-export').onclick=()=>{const blob=new Blob([JSON.stringify(documentData(),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`ciclo-estudos-${C.dateKey(new Date())}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
 $('backup-import').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>1000000)throw new Error('O backup excede o tamanho permitido.');const imported=C.validate(JSON.parse(await file.text())),merged=C.merge(documentData(),imported);adopt(merged);changed();announce('Backup importado e combinado com os registros existentes. Conecte ao GitHub para sincronizar.')}catch(error){announce(error.message||'Não foi possível importar este arquivo.',true)}finally{e.target.value=''}};
-document.querySelectorAll('[data-view]').forEach(button=>{button.onclick=()=>{document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-selected',String(b===button)));for(const id of ['planner-view','study-view','reviews-view','github-view'])$(id).hidden=id!==button.dataset.view;if(button.dataset.view==='study-view'){fillSubjects();paintTimer();renderStudies()}}});
+document.querySelectorAll('[data-view]').forEach(button=>{button.onclick=()=>{document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-selected',String(b===button)));for(const id of ['planner-view','study-view','reviews-view','reflection-view','github-view'])$(id).hidden=id!==button.dataset.view;if(button.dataset.view==='study-view'){fillSubjects();paintTimer();renderStudies()}}});
 const today=C.dateKey(new Date());$('record-date').value=today;$('chart-date').value=today;$('history-month').value=today.slice(0,7);
 try{const config=JSON.parse(localStorage.getItem(CONNECTION));if(config){$('github-repo').value=config.repo;$('github-branch').value=config.branch}}catch{}
 window.StudyApp={
  snapshot:()=>documentData(),
+ commitProgress:(planDays,reflections)=>{C.validate({...documentData(),planDays,reflections});data.planDays=planDays;data.reflections=reflections;changed()},
+ openView:id=>{document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.view===id)));for(const view of ['planner-view','study-view','reviews-view','reflection-view','github-view'])$(view).hidden=view!==id},
+ selectStudy:subject=>{if(timer.mode!=='idle'&&timer.subject!==subject){showMessage('Salve ou reinicie a sessão atual antes de trocar a matéria.',true);return false}fillSubjects();if(!state.subjects.some(s=>s.name===subject&&s.status!=='Aguardando')){showMessage('Esta matéria não está ativa no planejamento.',true);return false}$('timer-subject').value=subject;paintTimer();return true},
  commitReviews:(plans,reviews)=>{C.validate({...documentData(),reviewPlans:plans,reviews});data.reviewPlans=plans;data.reviews=reviews;changed()},
  getReviewTimer:()=>structuredClone(reviewTimer),
  saveReviewTimer:value=>{reviewTimer=structuredClone(value);persist()},
